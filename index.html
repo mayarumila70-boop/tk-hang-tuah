@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aku Mengenal Tanaman - MPI PAUD Interaktif</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            green: '#4ADE80',
+                            darkgreen: '#16A34A',
+                            yellow: '#FACC15',
+                            blue: '#38BDF8',
+                            softbg: '#F0FDF4',
+                            pink: '#F472B6'
+                        }
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'Quicksand', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome CDN for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom Style & Micro Animations -->
+    <style>
+        body {
+            font-family: 'Fredoka', 'Quicksand', sans-serif;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .bounce-hover:hover {
+            transform: scale(1.05) translateY(-4px);
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .bounce-active:active {
+            transform: scale(0.95);
+        }
+
+        .floating-anim {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .pulse-anim {
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(74, 222, 128, 0.6); }
+            50% { box-shadow: 0 0 30px rgba(250, 204, 21, 0.9); }
+        }
+
+        /* Certificate Print Layout */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-certificate, #printable-certificate * {
+                visibility: visible;
+            }
+            #printable-certificate {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="bg-emerald-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- Header Controls & Top Navigation -->
+    <header class="sticky top-0 z-50 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md shadow-md border-b-4 border-emerald-400 px-4 py-2 flex items-center justify-between">
+        <!-- Logo Brand -->
+        <div class="flex items-center gap-3 cursor-pointer" onclick="showSection('beranda')">
+            <div class="w-10 h-10 rounded-full bg-emerald-400 flex items-center justify-center text-white text-2xl shadow-inner floating-anim">
+                🌱
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold text-emerald-600 dark:text-emerald-400 leading-none">Aku Mengenal Tanaman</h1>
+                <span class="text-xs text-amber-500 font-medium">MPI PAUD Interaktif</span>
+            </div>
+        </div>
+
+        <!-- Global Quick Controls -->
+        <div class="flex items-center gap-2">
+            <!-- Audio Background Toggle -->
+            <button id="btn-music" onclick="toggleBGM()" class="p-2.5 rounded-2xl bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300 bounce-hover text-lg shadow-sm" title="Musik Latar">
+                <i class="fas fa-music"></i>
+            </button>
+            <!-- TTS Speech Narration Toggle -->
+            <button id="btn-narration" onclick="toggleNarration()" class="p-2.5 rounded-2xl bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 bounce-hover text-lg shadow-sm" title="Suara Narasi">
+                <i class="fas fa-volume-high"></i>
+            </button>
+            <!-- Fullscreen Toggle -->
+            <button onclick="toggleFullscreen()" class="p-2.5 rounded-2xl bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 bounce-hover text-lg shadow-sm hidden md:block" title="Layar Penuh">
+                <i class="fas fa-expand"></i>
+            </button>
+            <!-- Dark Mode Toggle -->
+            <button onclick="toggleDarkMode()" class="p-2.5 rounded-2xl bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-amber-300 bounce-hover text-lg shadow-sm" title="Mode Gelap/Terang">
+                <i class="fas fa-moon dark:hidden"></i>
+                <i class="fas fa-sun hidden dark:inline"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Menu Navigation Tabs -->
+    <nav class="bg-emerald-500 dark:bg-emerald-800 text-white shadow-lg px-2 py-2 overflow-x-auto whitespace-nowrap scrollbar-none flex justify-start md:justify-center gap-2">
+        <button onclick="showSection('beranda')" class="nav-btn bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+            <i class="fas fa-house"></i> Beranda
+        </button>
+        <button onclick="showSection('tujuan')" class="nav-btn bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+            <i class="fas fa-bullseye"></i> Tujuan
+        </button>
+        <button onclick="showSection('materi')" class="nav-btn bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+            <i class="fas fa-book-open"></i> Materi
+        </button>
+        <button onclick="showSection('video')" class="nav-btn bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+            <i class="fas fa-circle-play"></i> Video
+        </button>
+        <button onclick="showSection('game')" class="nav-btn bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+            <i class="fas fa-gamepad"></i> Game
+        </button>
+        <button onclick="showSection('kuis')" class="nav-btn bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+            <i class="fas fa-star"></i> Kuis
+        </button>
+        <button onclick="showSection('portofolio')" class="nav-btn bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+            <i class="fas fa-award"></i> Portofolio
+        </button>
+        <button onclick="showSection('guru')" class="nav-btn bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+            <i class="fas fa-chalkboard-user"></i> Dashboard Guru
+        </button>
+        <button onclick="showSection('panduan')" class="nav-btn bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all">
+            <i class="fas fa-code"></i> Code & Panduan
+        </button>
+    </nav>
+
+    <!-- Global Progress Bar -->
+    <div class="w-full bg-slate-200 dark:bg-slate-700 h-2">
+        <div id="overall-progress" class="bg-amber-400 h-2 transition-all duration-500 w-1/12"></div>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow container mx-auto p-4 md:p-6 max-w-6xl">
+
+        <!-- SECTION A: BERANDA -->
+        <section id="sec-beranda" class="content-section space-y-6 text-center">
+            <div class="bg-gradient-to-b from-sky-200 to-emerald-100 dark:from-slate-800 dark:to-emerald-900 rounded-3xl p-6 md:p-12 border-4 border-yellow-400 shadow-xl relative overflow-hidden">
+                <!-- Background Floating Elements -->
+                <div class="absolute top-4 left-4 text-4xl floating-anim">☀️</div>
+                <div class="absolute top-8 right-8 text-3xl floating-anim" style="animation-delay: 1s;">🦋</div>
+                <div class="absolute bottom-4 left-8 text-3xl floating-anim" style="animation-delay: 1.5s;">🌺</div>
+                <div class="absolute bottom-6 right-10 text-4xl floating-anim" style="animation-delay: 0.5s;">🌳</div>
+
+                <div class="relative z-10 max-w-2xl mx-auto space-y-4">
+                    <span class="inline-block px-4 py-1.5 bg-yellow-300 text-yellow-900 font-bold rounded-full text-sm uppercase tracking-wide">
+                        Selamat Datang Teman-Teman!
+                    </span>
+                    <h2 class="text-3xl md:text-5xl font-extrabold text-emerald-800 dark:text-emerald-300 leading-tight">
+                        Petualangan Seru:<br>"Aku Mengenal Tanaman"
+                    </h2>
+                    <p class="text-lg md:text-xl text-slate-700 dark:text-slate-200 font-medium">
+                        Ayo belajar mengenal bagian tanaman, kebutuhannya, dan manfaatnya sambil bermain game seru!
+                    </p>
+
+                    <!-- Interactive Mascot Illustration -->
+                    <div class="my-6">
+                        <div class="text-7xl md:text-9xl cursor-pointer bounce-hover inline-block drop-shadow-md" onclick="speakText('Halo! Aku Deno si Pohon Ceria. Ayo belajar bersamaku!')">
+                            🌳
+                        </div>
+                        <p class="text-xs text-emerald-700 dark:text-emerald-400 font-semibold mt-1">
+                            (Klik pohon untuk menyapa!)
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-wrap justify-center gap-4 pt-2">
+                        <button onclick="showSection('materi')" class="px-8 py-4 bg-yellow-400 hover:bg-yellow-300 text-yellow-950 text-xl font-bold rounded-3xl shadow-lg border-b-4 border-yellow-600 bounce-hover bounce-active flex items-center gap-3">
+                            <i class="fas fa-play text-2xl"></i> Mulai Belajar!
+                        </button>
+                        <button onclick="openModal('modal-petunjuk')" class="px-6 py-4 bg-white dark:bg-slate-700 hover:bg-slate-100 text-emerald-700 dark:text-emerald-300 text-lg font-bold rounded-3xl shadow-md border-2 border-emerald-400 bounce-hover flex items-center gap-2">
+                            <i class="fas fa-circle-question"></i> Petunjuk
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION B: TUJUAN PEMBELAJARAN -->
+        <section id="sec-tujuan" class="content-section hidden space-y-6">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-bold text-emerald-700 dark:text-emerald-400">🎯 Tujuan Pembelajaran</h2>
+                <p class="text-slate-600 dark:text-slate-300">Capaian Pembelajaran Fase PAUD (Usia 4–6 Tahun)</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border-2 border-emerald-300 shadow-md flex items-start gap-4 bounce-hover" onclick="speakText('Tujuan Pertama: Anak dapat mengenal bagian-bagian tanaman seperti akar, batang, daun, bunga, dan buah.')">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 text-3xl flex items-center justify-center shrink-0">🌿</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-emerald-800 dark:text-emerald-300">1. Bagian Tanaman</h3>
+                        <p class="text-slate-600 dark:text-slate-300 mt-1">Anak dapat mengidentifikasi dan menyebutkan bagian-bagian utama tanaman (Akar, Batang, Daun, Bunga, Buah).</p>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border-2 border-amber-300 shadow-md flex items-start gap-4 bounce-hover" onclick="speakText('Tujuan Kedua: Anak mengetahui apa saja kebutuhan tanaman agar tumbuh subur.')">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 text-3xl flex items-center justify-center shrink-0">☀️</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-amber-800 dark:text-amber-300">2. Kebutuhan Tanaman</h3>
+                        <p class="text-slate-600 dark:text-slate-300 mt-1">Anak memahami unsur penting tumbuh kembang tanaman: Air, Tanah, Cahaya Matahari, dan Udara.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border-2 border-blue-300 shadow-md flex items-start gap-4 bounce-hover" onclick="speakText('Tujuan Ketiga: Anak mengetahui manfaat tanaman bagi kehidupan manusia dan bumi.')">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-100 text-blue-600 text-3xl flex items-center justify-center shrink-0">🍎</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-blue-800 dark:text-blue-300">3. Manfaat Tanaman</h3>
+                        <p class="text-slate-600 dark:text-slate-300 mt-1">Anak mengetahui peran tanaman sebagai sumber oksigen, bahan makanan, obat alami, dan penghias lingkungan.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border-2 border-pink-300 shadow-md flex items-start gap-4 bounce-hover" onclick="speakText('Tujuan Keempat: Menumbuhkan rasa cinta dan peduli pada lingkungan hidup sekitar.')">
+                    <div class="w-14 h-14 rounded-2xl bg-pink-100 text-pink-600 text-3xl flex items-center justify-center shrink-0">❤️</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-pink-800 dark:text-pink-300">4. Cinta Lingkungan</h3>
+                        <p class="text-slate-600 dark:text-slate-300 mt-1">Anak membiasakan sikap menyayangi dan merawat tanaman (menyiram, tidak memetik sembarangan).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION C: MATERI INTERAKTIF -->
+        <section id="sec-materi" class="content-section hidden space-y-6">
+            <!-- Sub-Menu Selector for Materi -->
+            <div class="flex justify-center gap-2 border-b-2 border-emerald-200 pb-3 flex-wrap">
+                <button onclick="switchMateriTab(1)" id="tab-mat-1" class="materi-tab-btn px-5 py-2.5 rounded-2xl font-bold bg-emerald-500 text-white shadow-md">
+                    🌱 1. Bagian Tanaman
+                </button>
+                <button onclick="switchMateriTab(2)" id="tab-mat-2" class="materi-tab-btn px-5 py-2.5 rounded-2xl font-bold bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200">
+                    💧 2. Kebutuhan Tanaman
+                </button>
+                <button onclick="switchMateriTab(3)" id="tab-mat-3" class="materi-tab-btn px-5 py-2.5 rounded-2xl font-bold bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200">
+                    🌍 3. Manfaat Tanaman
+                </button>
+            </div>
+
+            <!-- Material Card Carousel Container -->
+            <div class="bg-white dark:bg-slate-800 rounded-3xl border-4 border-emerald-400 p-6 shadow-xl text-center min-h-[420px] flex flex-col justify-between relative">
+                
+                <!-- Dynamic Title & Indicator -->
+                <div>
+                    <span id="materi-category-badge" class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold uppercase">
+                        Kategori Materi
+                    </span>
+                    <h3 id="materi-title" class="text-3xl font-extrabold text-emerald-700 dark:text-emerald-300 mt-2">
+                        Judul Materi
+                    </h3>
+                </div>
+
+                <!-- Material Visual Illustration & Content -->
+                <div class="my-6 flex flex-col md:flex-row items-center justify-center gap-6">
+                    <div id="materi-icon" class="text-8xl md:text-9xl p-6 bg-emerald-50 dark:bg-slate-700 rounded-3xl border-2 border-dashed border-emerald-300 bounce-hover cursor-pointer" onclick="repeatCurrentNarration()">
+                        🌴
+                    </div>
+                    <div class="text-left max-w-md space-y-3">
+                        <p id="materi-desc" class="text-xl md:text-2xl font-semibold text-slate-700 dark:text-slate-200 leading-relaxed">
+                            Deskripsi ringkas materi akan muncul di sini.
+                        </p>
+                        <button onclick="repeatCurrentNarration()" class="px-4 py-2 bg-blue-500 text-white font-bold rounded-2xl text-sm flex items-center gap-2 hover:bg-blue-600">
+                            <i class="fas fa-volume-high"></i> Dengarkan Suara Narasi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Carousel Navigation Controls -->
+                <div class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+                    <button onclick="prevMateriCard()" id="btn-prev-materi" class="px-5 py-3 bg-slate-300 hover:bg-slate-400 font-bold rounded-2xl text-slate-800 flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i> Sebelumnya
+                    </button>
+                    <span id="materi-counter" class="text-sm font-bold text-slate-500">1 / 5</span>
+                    <button onclick="nextMateriCard()" id="btn-next-materi" class="px-5 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-2xl flex items-center gap-2 shadow-md">
+                        Berikutnya <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION D: VIDEO PEMBELAJARAN -->
+        <section id="sec-video" class="content-section hidden space-y-6 text-center">
+            <div class="space-y-2">
+                <h2 class="text-3xl font-bold text-emerald-700 dark:text-emerald-400">📺 Video Pembelajaran</h2>
+                <p class="text-slate-600 dark:text-slate-300">Mari menonton video edukasi tentang proses bertumbuhnya tanaman!</p>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-4 md:p-6 border-4 border-amber-400 shadow-xl max-w-3xl mx-auto">
+                <div class="aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-inner">
+                    <iframe id="youtube-player" class="w-full h-full" src="https://www.youtube.com/embed/g3yG29X6j8s" title="Video Pembelajaran Tanaman PAUD" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="mt-4 flex flex-col md:flex-row items-center justify-between gap-3 text-left">
+                    <div>
+                        <h4 id="video-title-display" class="font-bold text-lg text-slate-800 dark:text-slate-100">Video: Lagu Bagian-Bagian Tanaman</h4>
+                        <p class="text-xs text-slate-500">Link video disinkronkan otomatis melalui Google Spreadsheet Guru.</p>
+                    </div>
+                    <button onclick="loadSpreadsheetVideo()" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 font-bold text-amber-950 rounded-xl text-sm flex items-center gap-2 shrink-0">
+                        <i class="fas fa-rotate"></i> Muat Ulang Video
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION E: PERMAINAN EDUKATIF -->
+        <section id="sec-game" class="content-section hidden space-y-6">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-bold text-emerald-700 dark:text-emerald-400">🎮 Permainan Edukatif</h2>
+                <p class="text-slate-600 dark:text-slate-300">Pilih permainan kesukaanmu dan kumpulkan skor terbanyak!</p>
+            </div>
+
+            <!-- Game Mode Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Game 1 Card -->
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 border-4 border-emerald-400 shadow-lg text-center space-y-4 bounce-hover">
+                    <div class="text-6xl">🧩</div>
+                    <h3 class="text-xl font-bold text-emerald-800 dark:text-emerald-300">Game 1: Susun Bagian Tanaman</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-300">Cocokkan ikon bagian tanaman ke tempatnya yang sesuai.</p>
+                    <button onclick="startMiniGame(1)" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-2xl shadow-md">
+                        Mainkan Sekarang!
+                    </button>
+                </div>
+
+                <!-- Game 2 Card -->
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 border-4 border-amber-400 shadow-lg text-center space-y-4 bounce-hover">
+                    <div class="text-6xl">🏷️</div>
+                    <h3 class="text-xl font-bold text-amber-800 dark:text-amber-300">Game 2: Tebe Kebutuhan</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-300">Pilih mana benda yang dibutuhkan tanaman untuk tumbuh.</p>
+                    <button onclick="startMiniGame(2)" class="w-full py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-md">
+                        Mainkan Sekarang!
+                    </button>
+                </div>
+
+                <!-- Game 3 Card -->
+                <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 border-4 border-blue-400 shadow-lg text-center space-y-4 bounce-hover">
+                    <div class="text-6xl">🍎</div>
+                    <h3 class="text-xl font-bold text-blue-800 dark:text-blue-300">Game 3: Tangkap Buah & Manfaat</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-300">Tebak gambar hasil dan manfaat dari tanaman.</p>
+                    <button onclick="startMiniGame(3)" class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-2xl shadow-md">
+                        Mainkan Sekarang!
+                    </button>
+                </div>
+            </div>
+
+            <!-- Game Play Arena Modal / Container -->
+            <div id="game-arena" class="hidden bg-white dark:bg-slate-800 rounded-3xl border-4 border-yellow-400 p-6 shadow-2xl space-y-6">
+                <div class="flex justify-between items-center border-b pb-3">
+                    <h3 id="game-title" class="text-2xl font-bold text-emerald-700 dark:text-emerald-300">Arena Permainan</h3>
+                    <div class="flex items-center gap-4">
+                        <span class="text-lg font-bold text-amber-600">Skor Game: <span id="game-score">0</span></span>
+                        <button onclick="closeMiniGame()" class="px-3 py-1 bg-red-500 text-white rounded-xl font-bold text-sm">Keluar</button>
+                    </div>
+                </div>
+
+                <!-- Interactive Canvas / Touch Field -->
+                <div id="game-content-area" class="min-h-[300px] flex flex-col items-center justify-center p-4">
+                    <!-- Dynamic game controls loaded via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION F: KUIS INTERAKTIF -->
+        <section id="sec-kuis" class="content-section hidden space-y-6">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-bold text-emerald-700 dark:text-emerald-400">📝 Kuis Interaktif PAUD</h2>
+                <p class="text-slate-600 dark:text-slate-300">Jawab 10 soal bergambar dan dapatkan Sertifikat Kelulusan!</p>
+            </div>
+
+            <div id="quiz-container" class="bg-white dark:bg-slate-800 rounded-3xl border-4 border-emerald-400 p-6 md:p-8 shadow-xl max-w-3xl mx-auto space-y-6">
+                <!-- Student Name Input (if not set) -->
+                <div id="quiz-user-setup" class="space-y-4">
+                    <label class="block text-lg font-bold text-slate-700 dark:text-slate-200">Masukkan Nama Lengkap Anak:</label>
+                    <input type="text" id="student-name-input" placeholder="Contoh: Budi Santoso" class="w-full px-5 py-3 rounded-2xl border-2 border-emerald-400 dark:bg-slate-700 dark:text-white text-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <button onclick="startQuizEngine()" class="w-full py-4 bg-yellow-400 hover:bg-yellow-300 text-yellow-950 font-bold text-xl rounded-2xl shadow-lg border-b-4 border-yellow-600">
+                        Mulai Kuis Sekarang! 🚀
+                    </button>
+                </div>
+
+                <!-- Active Quiz Question Interface -->
+                <div id="quiz-active-area" class="hidden space-y-6">
+                    <!-- Question Header & Progress -->
+                    <div class="flex justify-between items-center text-sm font-bold text-emerald-700 dark:text-emerald-400">
+                        <span>Soal No. <span id="quiz-current-num">1</span> dari 10</span>
+                        <span>Skor Sementa: <span id="quiz-live-score">0</span></span>
+                    </div>
+
+                    <!-- Question Text & Visual -->
+                    <div class="text-center space-y-4">
+                        <div id="quiz-image-box" class="text-8xl p-4 bg-emerald-50 dark:bg-slate-700 rounded-3xl inline-block border-2 border-dashed border-emerald-300">
+                            ❓
+                        </div>
+                        <h3 id="quiz-question-text" class="text-2xl font-bold text-slate-800 dark:text-slate-100">
+                            Pertanyaan kuis akan tampil di sini?
+                        </h3>
+                    </div>
+
+                    <!-- Options Grid -->
+                    <div id="quiz-options-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Dynamic options loaded via JS -->
+                    </div>
+                </div>
+
+                <!-- Quiz Completion Result Screen -->
+                <div id="quiz-result-area" class="hidden text-center space-y-6 py-6">
+                    <div class="text-7xl floating-anim">🏆</div>
+                    <h3 class="text-3xl font-extrabold text-emerald-700 dark:text-emerald-300">Kuis Selesai!</h3>
+                    <p class="text-xl text-slate-700 dark:text-slate-200 font-semibold">
+                        Nama: <span id="res-student-name" class="text-amber-600">Anak</span><br>
+                        Skor Akhir: <span id="res-final-score" class="text-3xl font-extrabold text-emerald-600">0</span> / 100
+                    </p>
+
+                    <div id="cert-eligible-msg" class="p-4 bg-emerald-100 text-emerald-800 rounded-2xl font-bold hidden">
+                        🎉 Selamat! Nilai kamu ≥ 80. Kamu berhak mendapatkan Sertifikat Digital!
+                    </div>
+
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <button onclick="viewDigitalCertificate()" id="btn-view-cert" class="px-6 py-3 bg-amber-400 hover:bg-amber-300 font-bold text-amber-950 rounded-2xl shadow-md hidden">
+                            🎓 Lihat Sertifikat PDF
+                        </button>
+                        <button onclick="resetQuizEngine()" class="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-2xl shadow-md">
+                            🔄 Ulangi Kuis
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION G: PORTOFOLIO ANAK -->
+        <section id="sec-portofolio" class="content-section hidden space-y-6">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-bold text-emerald-700 dark:text-emerald-400">🏅 Portofolio Digital Anak</h2>
+                <p class="text-slate-600 dark:text-slate-300">Laporan capaian dan lencana penghargaan yang berhasil diraih!</p>
+            </div>
+
+            <!-- Student Profile Summary Card -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border-4 border-amber-400 shadow-xl flex flex-col md:flex-row items-center gap-6">
+                <div class="w-24 h-24 rounded-full bg-amber-200 text-amber-700 flex items-center justify-center text-5xl font-bold border-4 border-white shadow-md">
+                    👶
+                </div>
+                <div class="space-y-1 text-center md:text-left flex-grow">
+                    <h3 id="port-student-name" class="text-2xl font-bold text-slate-800 dark:text-slate-100">Siswa PAUD Ceria</h3>
+                    <p class="text-sm text-slate-500">Status Pembelajaran: <span class="font-bold text-emerald-600">Sangat Baik 🌟</span></p>
+                    <div class="flex flex-wrap gap-2 pt-2 justify-center md:justify-start">
+                        <span id="badge-1" class="px-3 py-1 bg-slate-200 text-slate-500 rounded-full text-xs font-bold">🌱 Paham Bagian</span>
+                        <span id="badge-2" class="px-3 py-1 bg-slate-200 text-slate-500 rounded-full text-xs font-bold">☀️ Sahabat Tanaman</span>
+                        <span id="badge-3" class="px-3 py-1 bg-slate-200 text-slate-500 rounded-full text-xs font-bold">🏆 Juara Kuis</span>
+                    </div>
+                </div>
+                <button onclick="printCertificate()" class="px-5 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-2xl shadow-md flex items-center gap-2">
+                    <i class="fas fa-print"></i> Cetak Laporan
+                </button>
+            </div>
+
+            <!-- Quiz History Table -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border-2 border-emerald-300 shadow-md space-y-4">
+                <h4 class="text-xl font-bold text-emerald-700 dark:text-emerald-400">📜 Riwayat Nilai Kuis (Tersimpan Lokal & Cloud)</h4>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-emerald-100 dark:bg-slate-700 text-emerald-800 dark:text-emerald-300 text-sm">
+                                <th class="p-3 rounded-l-xl">Tanggal</th>
+                                <th class="p-3">Nama</th>
+                                <th class="p-3">Skor</th>
+                                <th class="p-3 rounded-r-xl">Status Sertifikat</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portfolio-history-body" class="divide-y divide-slate-200 dark:divide-slate-700 text-sm">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION H: REKAP GURU -->
+        <section id="sec-guru" class="content-section hidden space-y-6">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-bold text-emerald-700 dark:text-emerald-400">📊 Dashboard Rekap Guru</h2>
+                <p class="text-slate-600 dark:text-slate-300">Integrasi Google Spreadsheet & Google Apps Script Backend</p>
+            </div>
+
+            <!-- Configuration API Box -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border-4 border-blue-400 shadow-xl space-y-4">
+                <h3 class="text-xl font-bold text-blue-700 dark:text-blue-400 flex items-center gap-2">
+                    <i class="fas fa-link"></i> Pengaturan URL Google Apps Script Web App
+                </h3>
+                <p class="text-sm text-slate-600 dark:text-slate-300">
+                    Masukkan Web App URL dari deployment Google Apps Script Anda untuk melakukan sinkronisasi dua arah real-time dengan Google Spreadsheet.
+                </p>
+                <div class="flex flex-col md:flex-row gap-3">
+                    <input type="url" id="script-url-input" placeholder="https://script.google.com/macros/s/.../exec" class="flex-grow px-4 py-3 rounded-2xl border-2 border-blue-300 dark:bg-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button onclick="saveScriptUrl()" class="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-2xl shadow-md shrink-0">
+                        Simpan Configuration
+                    </button>
+                </div>
+            </div>
+
+            <!-- Realtime Cloud Data Table -->
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border-2 border-emerald-300 shadow-md space-y-4">
+                <div class="flex justify-between items-center">
+                    <h4 class="text-xl font-bold text-emerald-700 dark:text-emerald-400">Data Hasil Kuis Anak dari Spreadsheet</h4>
+                    <button onclick="fetchCloudData()" class="px-4 py-2 bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-2">
+                        <i class="fas fa-arrows-rotate"></i> Refresh Cloud Data
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-emerald-50 dark:bg-slate-700 text-emerald-900 dark:text-emerald-200 text-xs uppercase font-bold">
+                                <th class="p-3">Nama Anak</th>
+                                <th class="p-3">Tanggal</th>
+                                <th class="p-3">Skor Kuis</th>
+                                <th class="p-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cloud-data-table-body" class="divide-y divide-slate-200 dark:divide-slate-700 text-sm">
+                            <tr>
+                                <td colspan="4" class="p-4 text-center text-slate-400">Silakan atur Web App URL dan tekan tombol Refresh Data.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION I: CODE & PANDUAN INTEGRASI -->
+        <section id="sec-panduan" class="content-section hidden space-y-6">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-bold text-emerald-700 dark:text-emerald-400">💻 Source Code & Panduan Integrasi</h2>
+                <p class="text-slate-600 dark:text-slate-300">Dokumentasi Lengkap Google Apps Script, Spreadsheet, Docs, & Hosting</p>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl border-2 border-slate-300 shadow-md space-y-6">
+                <!-- Tab Selector for Guide -->
+                <div class="flex gap-2 border-b pb-3 overflow-x-auto">
+                    <button onclick="showGuideTab('gs')" class="px-4 py-2 bg-emerald-500 text-white font-bold rounded-xl text-sm">Code Google Apps Script</button>
+                    <button onclick="showGuideTab('sheet')" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 font-bold rounded-xl text-sm">Struktur Google Sheet</button>
+                    <button onclick="showGuideTab('doc')" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 font-bold rounded-xl text-sm">Template Google Docs</button>
+                    <button onclick="showGuideTab('deploy')" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 font-bold rounded-xl text-sm">Cara Deploy & Hosting</button>
+                </div>
+
+                <!-- Guide Tab 1: Apps Script GS Code -->
+                <div id="guide-gs" class="guide-content space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-emerald-700 dark:text-emerald-300">File Backend: <code>appscript.gs</code></h4>
+                        <button onclick="copyCode('apps-script-code')" class="px-3 py-1 bg-amber-400 font-bold text-xs rounded-lg">Copy Code</button>
+                    </div>
+                    <pre id="apps-script-code" class="bg-slate-900 text-emerald-400 p-4 rounded-2xl text-xs overflow-x-auto font-mono">
+/* 
+ * ==========================================
+ * GOOGLE APPS SCRIPT BACKEND (appscript.gs)
+ * Media Pembelajaran PAUD "Aku Mengenal Tanaman"
+ * ==========================================
+ */
+
+// Handle GET Requests (Ambil data dari Sheet)
+function doGet(e) {
+  var action = e.parameter.action;
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  if (action === "getMateri") {
+    var sheet = ss.getSheetByName("Materi");
+    var data = sheet.getDataRange().getValues();
+    return createJsonResponse({ status: "success", data: data });
+  } 
+  else if (action === "getVideo") {
+    var sheet = ss.getSheetByName("Video");
+    var data = sheet.getDataRange().getValues();
+    return createJsonResponse({ status: "success", data: data });
+  } 
+  else if (action === "getHasil") {
+    var sheet = ss.getSheetByName("Hasil");
+    var data = sheet.getDataRange().getValues();
+    return createJsonResponse({ status: "success", data: data });
+  }
+  
+  return createJsonResponse({ status: "error", message: "Action tidak dikenal" });
+}
+
+// Handle POST Requests (Simpan hasil kuis & Buat Sertifikat)
+function doPost(e) {
+  try {
+    var postData = JSON.parse(e.postData.contents);
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheetHasil = ss.getSheetByName("Hasil");
+    
+    var nama = postData.nama;
+    var tanggal = new Date().toLocaleDateString("id-ID");
+    var skor = postData.skor;
+    var status = skor >= 80 ? "LULUS (Sertifikat)" : "BBM (Belum Belajar Maksimal)";
+    
+    // Simpan ke Google Spreadsheet
+    sheetHasil.appendRow([nama, tanggal, skor, status]);
+    
+    // Buat Sertifikat Digital PDF jika LULUS
+    var certUrl = "";
+    if (skor >= 80) {
+      certUrl = generateDigitalCertificate(nama, skor, tanggal);
+    }
+    
+    return createJsonResponse({
+      status: "success",
+      message: "Data berhasil disimpan!",
+      certUrl: certUrl
+    });
+  } catch (error) {
+    return createJsonResponse({ status: "error", message: error.toString() });
+  }
+}
+
+// Helper Response JSON
+function createJsonResponse(data) {
+  return ContentService.createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// Fungsi Membuat Sertifikat PDF Otomatis via Google Docs Template
+function generateDigitalCertificate(nama, skor, tanggal) {
+  // Ganti ID Template Google Docs dan ID Folder Penyimpanan PDF berikut:
+  var TEMPLATE_DOC_ID = "MASUKKAN_ID_GOOGLE_DOC_TEMPLATE_ANDA";
+  var TARGET_FOLDER_ID = "MASUKKAN_ID_FOLDER_GOOGLE_DRIVE_ANDA";
+  
+  try {
+    var templateFile = DriveApp.getFileById(TEMPLATE_DOC_ID);
+    var targetFolder = DriveApp.getFolderById(TARGET_FOLDER_ID);
+    
+    var copyDoc = templateFile.makeCopy("Sertifikat_" + nama, targetFolder);
+    var doc = DocumentApp.openById(copyDoc.getId());
+    var body = doc.getBody();
+    
+    // Replace Tags Placeholder
+    body.replaceText("{{NAMA_ANAK}}", nama);
+    body.replaceText("{{SKOR}}", skor.toString());
+    body.replaceText("{{TANGGAL}}", tanggal);
+    doc.saveAndClose();
+    
+    // Convert to PDF
+    var pdfBlob = copyDoc.getAs("application/pdf");
+    var pdfFile = targetFolder.createFile(pdfBlob);
+    pdfFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    
+    // Hapus temporary doc file
+    DriveApp.getFileById(copyDoc.getId()).setTrashed(true);
+    
+    return pdfFile.getUrl();
+  } catch(e) {
+    return "Gagal membuat PDF: " + e.toString();
+  }
+}
+</pre>
+                </div>
+
+                <!-- Guide Tab 2: Spreadsheet Structure -->
+                <div id="guide-sheet" class="guide-content hidden space-y-3">
+                    <h4 class="font-bold text-emerald-700 dark:text-emerald-300">Struktur Google Spreadsheet Database</h4>
+                    <p class="text-sm text-slate-600 dark:text-slate-300">Buat Google Spreadsheet baru lalu buat 4 Sheet berikut dengan header kolom persis di bawah ini:</p>
+                    <ul class="list-disc pl-5 text-sm space-y-2 text-slate-700 dark:text-slate-300">
+                        <li><strong>Sheet 1: Materi</strong> (Kolom A: ID, Kolom B: Judul, Kolom C: Isi Materi, Kolom D: URL Gambar, Kolom E: URL Audio)</li>
+                        <li><strong>Sheet 2: Video</strong> (Kolom A: Judul Video, Kolom B: URL Video YouTube)</li>
+                        <li><strong>Sheet 3: Soal</strong> (Kolom A: Nomor, Kolom B: Pertanyaan, Kolom C: Pilihan A, Kolom D: Pilihan B, Kolom E: Pilihan C, Kolom F: Jawaban Benar)</li>
+                        <li><strong>Sheet 4: Hasil</strong> (Kolom A: Nama Anak, Kolom B: Tanggal, Kolom C: Skor, Kolom D: Status)</li>
+                    </ul>
+                </div>
+
+                <!-- Guide Tab 3: Google Docs Template -->
+                <div id="guide-doc" class="guide-content hidden space-y-3">
+                    <h4 class="font-bold text-emerald-700 dark:text-emerald-300">Template Google Docs Sertifikat</h4>
+                    <p class="text-sm text-slate-600 dark:text-slate-300">Buat dokumen Google Docs baru sebagai template sertifikat anak. Gunakan tag berikut di dalam dokumen:</p>
+                    <div class="bg-slate-100 dark:bg-slate-700 p-4 rounded-xl text-sm font-mono space-y-1">
+                        <p>Diberikan kepada: <strong>{{NAMA_ANAK}}</strong></p>
+                        <p>Telah menyelesaikan Kuis "Aku Mengenal Tanaman" dengan Nilai: <strong>{{SKOR}}</strong></p>
+                        <p>Diberikan pada tanggal: <strong>{{TANGGAL}}</strong></p>
+                    </div>
+                </div>
+
+                <!-- Guide Tab 4: Deployment & Hosting -->
+                <div id="guide-deploy" class="guide-content hidden space-y-3 text-sm text-slate-700 dark:text-slate-300">
+                    <h4 class="font-bold text-emerald-700 dark:text-emerald-300">Cara Deploy & Hosting Gratis</h4>
+                    <ol class="list-decimal pl-5 space-y-2">
+                        <li>Buka Google Spreadsheet yang telah dibuat, klik <strong>Ekstensi > Apps Script</strong>.</li>
+                        <li>Paste seluruh kode <code>appscript.gs</code> di atas. Selesaikan pengisian ID Google Doc & Folder.</li>
+                        <li>Klik <strong>Terapkan (Deploy) > Deployment Baru</strong>.</li>
+                        <li>Pilih Jenis Deployment: <strong>Aplikasi Web (Web App)</strong>.</li>
+                        <li>Set <i>Akses Siapa Saja (Anyone)</i>, lalu klik <strong>Terapkan</strong> dan berikan izin izin Google Drive.</li>
+                        <li>Salin Web App URL yang dihasilkan dan tempel di **Dashboard Guru** aplikasi ini.</li>
+                        <li>Hosting gratis website ini: Simpan file ini sebagai <code>index.html</code> dan upload ke <strong>GitHub Pages, Netlify, atau Vercel</strong>!</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-emerald-600 dark:bg-slate-800 text-white text-center py-4 text-xs font-medium border-t-4 border-amber-400">
+        <p>© 2026 Media Pembelajaran Interaktif PAUD - "Aku Mengenal Tanaman"</p>
+        <p class="text-emerald-200 mt-0.5">Dikembangkan untuk Guru, Orang Tua, & Anak Usia Dini Indonesia 🇮🇩</p>
+    </footer>
+
+    <!-- MODAL PETUNJUK -->
+    <div id="modal-petunjuk" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 max-w-lg w-full rounded-3xl p-6 border-4 border-yellow-400 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="text-2xl font-bold text-emerald-700 dark:text-emerald-300">❓ Petunjuk Penggunaan</h3>
+                <button onclick="closeModal('modal-petunjuk')" class="text-slate-400 hover:text-slate-600 text-2xl font-bold">&times;</button>
+            </div>
+            <div class="space-y-3 text-slate-700 dark:text-slate-200 text-sm">
+                <p><strong>1. Suara Narasi:</strong> Tekan ikon speaker untuk mendengarkan teks dibacakan secara otomatis.</p>
+                <p><strong>2. Belajar Materi:</strong> Tekan tombol Sebelumnya dan Berikutnya untuk berpindah materi.</p>
+                <p><strong>3. Game & Kuis:</strong> Mainkan game untuk melatih pemahaman dan selesaikan kuis untuk mendapat sertifikat digital.</p>
+            </div>
+            <button onclick="closeModal('modal-petunjuk')" class="w-full py-3 bg-emerald-500 text-white font-bold rounded-2xl">
+                Saya Mengerti!
+            </button>
+        </div>
+    </div>
+
+    <!-- CERTIFICATE PRINTABLE VIEW OVERLAY -->
+    <div id="printable-certificate-modal" class="fixed inset-0 bg-black/80 z-50 hidden overflow-y-auto p-4 flex items-center justify-center">
+        <div class="bg-white p-8 rounded-3xl max-w-3xl w-full border-8 border-amber-400 shadow-2xl text-center space-y-6 relative" id="printable-certificate">
+            <button onclick="closeModal('printable-certificate-modal')" class="absolute top-4 right-4 bg-red-500 text-white w-8 h-8 rounded-full font-bold print:hidden">&times;</button>
+            
+            <div class="border-4 border-dashed border-emerald-500 p-6 rounded-2xl space-y-4">
+                <div class="text-6xl">🎓🌱</div>
+                <h2 class="text-3xl font-extrabold text-emerald-800 uppercase tracking-widest">SERTIFIKAT KELULUSAN</h2>
+                <p class="text-sm text-slate-500 uppercase tracking-wide">Media Pembelajaran Interaktif PAUD "Aku Mengenal Tanaman"</p>
+                
+                <p class="text-base text-slate-600">Sertifikat ini secara resmi diberikan kepada:</p>
+                <h3 id="cert-student-fullname" class="text-3xl font-extrabold text-amber-600 underline">BUDI SANTOSO</h3>
+                
+                <p class="text-base text-slate-600 max-w-md mx-auto">
+                    Atas kehebatannya dalam mempelajari bagian-bagian tanaman, kebutuhan tanaman, dan manfaat tanaman dengan nilai sempurna:
+                </p>
+                <div class="text-4xl font-extrabold text-emerald-600" id="cert-score-display">NILAI: 100</div>
+
+                <div class="pt-6 flex justify-between items-end text-xs text-slate-500">
+                    <div>
+                        <p>Tanggal: <span id="cert-date-display">24/09/2026</span></p>
+                        <p>Status: LULUS SANGAT BAIK</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl">🌳</div>
+                        <p class="font-bold text-slate-700">Deno si Pohon Ceria</p>
+                        <p>Maskot Pembelajaran PAUD</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="print:hidden flex justify-center gap-4">
+                <button onclick="window.print()" class="px-6 py-3 bg-emerald-500 text-white font-bold rounded-2xl shadow-md">
+                    🖨️ Cetak / Simpan PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        /* ===================================================
+         * GLOBAL STATE & DATA STORAGE
+         * =================================================== */
+        let state = {
+            activeSection: 'beranda',
+            bgmPlaying: false,
+            narrationEnabled: true,
+            currentMateriTab: 1,
+            currentMateriIndex: 0,
+            studentName: '',
+            quizScore: 0,
+            currentQuizIndex: 0,
+            earnedBadges: [],
+            scriptUrl: localStorage.getItem('mpi_script_url') || ''
+        };
+
+        // Audio Synth Generator (Web Audio API) for sound effects without broken external links
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSoundEffect(type) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(150, audioCtx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'click') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.05);
+                }
+            } catch (e) {
+                console.log('Audio Context error', e);
+            }
+        }
+
+        // Text-to-Speech Narration Generator
+        function speakText(text) {
+            if (!state.narrationEnabled) return;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop current speech
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.9; // Slightly slower for children
+                utterance.pitch = 1.1; // Slightly higher friendly pitch
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        /* ===================================================
+         * NAVIGATION & UI HANDLERS
+         * =================================================== */
+        function showSection(sectionId) {
+            playSoundEffect('click');
+            state.activeSection = sectionId;
+
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.add('hidden'));
+            
+            // Show target section
+            const target = document.getElementById(`sec-${sectionId}`);
+            if (target) target.classList.remove('hidden');
+
+            // Update Progress Bar
+            const navOrder = ['beranda', 'tujuan', 'materi', 'video', 'game', 'kuis', 'portofolio', 'guru', 'panduan'];
+            const idx = navOrder.indexOf(sectionId) + 1;
+            const pct = Math.round((idx / navOrder.length) * 100);
+            document.getElementById('overall-progress').style.width = `${pct}%`;
+
+            // Trigger Narration per view
+            if (sectionId === 'tujuan') speakText("Halaman Tujuan Pembelajaran. Ayo ketahui apa saja yang akan kita pelajari!");
+            else if (sectionId === 'materi') renderMateriCard();
+            else if (sectionId === 'video') speakText("Halaman Video Pembelajaran. Selamat menonton video tentang tanaman!");
+            else if (sectionId === 'game') speakText("Halaman Permainan Edukatif. Ayo pilih game yang ingin kamu mainkan!");
+            else if (sectionId === 'kuis') speakText("Halaman Kuis Interaktif. Masukkan namamu dan ayo mulai kuis!");
+        }
+
+        function toggleBGM() {
+            state.bgmPlaying = !state.bgmPlaying;
+            const btn = document.getElementById('btn-music');
+            if (state.bgmPlaying) {
+                btn.classList.add('bg-amber-300', 'ring-2', 'ring-amber-500');
+                speakText("Musik latar diaktifkan.");
+            } else {
+                btn.classList.remove('bg-amber-300', 'ring-2', 'ring-amber-500');
+                speakText("Musik latar dimatikan.");
+            }
+        }
+
+        function toggleNarration() {
+            state.narrationEnabled = !state.narrationEnabled;
+            const btn = document.getElementById('btn-narration');
+            if (state.narrationEnabled) {
+                btn.classList.remove('opacity-50');
+                speakText("Suara narasi aktif.");
+            } else {
+                btn.classList.add('opacity-50');
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => console.log(err));
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        function openModal(id) {
+            playSoundEffect('click');
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        /* ===================================================
+         * MATERI INTERAKTIF ENGINE
+         * =================================================== */
+        const materiData = {
+            1: [
+                { title: "Akar", icon: "🪴", desc: "Akar tumbuh di dalam tanah. Tugasnya menyerap air dan makanan untuk tanaman.", badge: "🌱" },
+                { title: "Batang", icon: "🪵", desc: "Batang berdiri tegak untuk menopang pohon dan menyalurkan air ke daun.", badge: "🌱" },
+                { title: "Daun", icon: "🍃", desc: "Daun berwarna hijau dan bertugas membuat makanan dengan bantuan sinar matahari.", badge: "🌱" },
+                { title: "Bunga", icon: "🌸", desc: "Bunga berwarna-warni dan indah. Bunga akan berkembang menjadi buah.", badge: "🌱" },
+                { title: "Buah", icon: "🍎", desc: "Buah rasanya lezat dan sehat. Di dalam buah terdapat biji tanaman.", badge: "🌱" }
+            ],
+            2: [
+                { title: "Air", icon: "💧", desc: "Tanaman butuh disiram air secara teratur agar tidak layu.", badge: "☀️" },
+                { title: "Tanah", icon: "🟤", desc: "Tanah adalah rumah tempat akar tumbuh dan mendapat nutrisi.", badge: "☀️" },
+                { title: "Sinar Matahari", icon: "☀️", desc: "Cahaya matahari memberi energi hangat bagi tanaman untuk bertumbuh.", badge: "☀️" },
+                { title: "Udara", icon: "💨", desc: "Tanaman bernapas dengan udara segar seperti kita manusia.", badge: "☀️" }
+            ],
+            3: [
+                { title: "Penghasil Oksigen", icon: "🌬️", desc: "Tanaman membuat udara sekitar kita menjadi sejuk dan segar.", badge: "🏆" },
+                { title: "Sumber Makanan", icon: "🥕", desc: "Sayur dan buah dari tanaman memberi tubuh kita energi dan gizi.", badge: "🏆" },
+                { title: "Obat-Obatan", icon: "🌿", desc: "Beberapa jenis tanaman dapat dijadikan obat herbal saat kita sakit.", badge: "🏆" },
+                { title: "Penghias Lingkungan", icon: "🌷", desc: "Taman yang penuh bunga membuat rumah dan sekolah menjadi indah.", badge: "🏆" }
+            ]
+        };
+
+        function switchMateriTab(tabNum) {
+            playSoundEffect('click');
+            state.currentMateriTab = tabNum;
+            state.currentMateriIndex = 0;
+
+            document.querySelectorAll('.materi-tab-btn').forEach(btn => {
+                btn.className = 'materi-tab-btn px-5 py-2.5 rounded-2xl font-bold bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200';
+            });
+            document.getElementById(`tab-mat-${tabNum}`).className = 'materi-tab-btn px-5 py-2.5 rounded-2xl font-bold bg-emerald-500 text-white shadow-md';
+
+            renderMateriCard();
+        }
+
+        function renderMateriCard() {
+            const list = materiData[state.currentMateriTab];
+            const item = list[state.currentMateriIndex];
+
+            const categoryNames = { 1: "Materi 1: Bagian Tanaman", 2: "Materi 2: Kebutuhan Tanaman", 3: "Materi 3: Manfaat Tanaman" };
+            document.getElementById('materi-category-badge').innerText = categoryNames[state.currentMateriTab];
+            document.getElementById('materi-title').innerText = item.title;
+            document.getElementById('materi-icon').innerText = item.icon;
+            document.getElementById('materi-desc').innerText = item.desc;
+            document.getElementById('materi-counter').innerText = `${state.currentMateriIndex + 1} / ${list.length}`;
+
+            // Narration
+            speakText(`${item.title}. ${item.desc}`);
+        }
+
+        function nextMateriCard() {
+            const list = materiData[state.currentMateriTab];
+            if (state.currentMateriIndex < list.length - 1) {
+                playSoundEffect('click');
+                state.currentMateriIndex++;
+                renderMateriCard();
+            }
+        }
+
+        function prevMateriCard() {
+            if (state.currentMateriIndex > 0) {
+                playSoundEffect('click');
+                state.currentMateriIndex--;
+                renderMateriCard();
+            }
+        }
+
+        function repeatCurrentNarration() {
+            const item = materiData[state.currentMateriTab][state.currentMateriIndex];
+            speakText(`${item.title}. ${item.desc}`);
+        }
+
+        /* ===================================================
+         * MINI GAMES ENGINE
+         * =================================================== */
+        let miniGameScore = 0;
+
+        function startMiniGame(type) {
+            playSoundEffect('click');
+            miniGameScore = 0;
+            document.getElementById('game-score').innerText = miniGameScore;
+            document.getElementById('game-arena').classList.remove('hidden');
+
+            const area = document.getElementById('game-content-area');
+            area.innerHTML = '';
+
+            if (type === 1) {
+                document.getElementById('game-title').innerText = "Game 1: Susun Bagian Tanaman";
+                area.innerHTML = `
+                    <div class="text-center space-y-4">
+                        <p class="font-bold text-lg">Pilih mana yang merupakan bagian dari tanaman:</p>
+                        <div class="flex flex-wrap justify-center gap-4">
+                            <button onclick="checkGameItem(true, 'Daun Hijau')" class="text-5xl p-6 bg-emerald-100 rounded-3xl bounce-hover shadow-md">🍃<br><span class="text-sm font-bold">Daun</span></button>
+                            <button onclick="checkGameItem(false, 'Mobil')" class="text-5xl p-6 bg-red-100 rounded-3xl bounce-hover shadow-md">🚗<br><span class="text-sm font-bold">Mobil</span></button>
+                            <button onclick="checkGameItem(true, 'Akar')" class="text-5xl p-6 bg-emerald-100 rounded-3xl bounce-hover shadow-md">🪴<br><span class="text-sm font-bold">Akar</span></button>
+                            <button onclick="checkGameItem(false, 'Robot')" class="text-5xl p-6 bg-red-100 rounded-3xl bounce-hover shadow-md">🤖<br><span class="text-sm font-bold">Robot</span></button>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 2) {
+                document.getElementById('game-title').innerText = "Game 2: Pilih Kebutuhan Tanaman";
+                area.innerHTML = `
+                    <div class="text-center space-y-4">
+                        <p class="font-bold text-lg">Manakah yang dibutuhkan tanaman agar tidak layu?</p>
+                        <div class="flex flex-wrap justify-center gap-4">
+                            <button onclick="checkGameItem(true, 'Air')" class="text-5xl p-6 bg-blue-100 rounded-3xl bounce-hover shadow-md">💧<br><span class="text-sm font-bold">Air</span></button>
+                            <button onclick="checkGameItem(false, 'Es Krim')" class="text-5xl p-6 bg-pink-100 rounded-3xl bounce-hover shadow-md">🍦<br><span class="text-sm font-bold">Es Krim</span></button>
+                            <button onclick="checkGameItem(true, 'Matahari')" class="text-5xl p-6 bg-amber-100 rounded-3xl bounce-hover shadow-md">☀️<br><span class="text-sm font-bold">Matahari</span></button>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 3) {
+                document.getElementById('game-title').innerText = "Game 3: Manfaat & Hasil Tanaman";
+                area.innerHTML = `
+                    <div class="text-center space-y-4">
+                        <p class="font-bold text-lg">Pilih buah atau manfaat yang dihasilkan tanaman:</p>
+                        <div class="flex flex-wrap justify-center gap-4">
+                            <button onclick="checkGameItem(true, 'Buah Apel')" class="text-5xl p-6 bg-emerald-100 rounded-3xl bounce-hover shadow-md">🍎<br><span class="text-sm font-bold">Apel</span></button>
+                            <button onclick="checkGameItem(true, 'Oksigen Segar')" class="text-5xl p-6 bg-emerald-100 rounded-3xl bounce-hover shadow-md">🌬️<br><span class="text-sm font-bold">Udara Segar</span></button>
+                            <button onclick="checkGameItem(false, 'Pensil')" class="text-5xl p-6 bg-slate-100 rounded-3xl bounce-hover shadow-md">✏️<br><span class="text-sm font-bold">Pensil</span></button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function checkGameItem(isCorrect, name) {
+            if (isCorrect) {
+                playSoundEffect('correct');
+                miniGameScore += 10;
+                document.getElementById('game-score').innerText = miniGameScore;
+                speakText(`Hebat! ${name} benar!`);
+            } else {
+                playSoundEffect('wrong');
+                speakText(`Oops! ${name} kurang tepat, coba lagi ya!`);
+            }
+        }
+
+        function closeMiniGame() {
+            document.getElementById('game-arena').classList.add('hidden');
+        }
+
+        /* ===================================================
+         * KUIS INTERAKTIF ENGINE (10 QUESTIONS)
+         * =================================================== */
+        const quizQuestions = [
+            { q: "Bagian tanaman yang tumbuh di dalam tanah adalah...", icon: "❓", opts: ["Akar", "Bunga", "Daun"], ans: 0 },
+            { q: "Daun pada tanaman umumnya berwarna...", icon: "🍃", opts: ["Merah", "Hijau", "Biru"], ans: 1 },
+            { q: "Apa yang disiramkan ke tanaman agar tidak haus?", icon: "💧", opts: ["Susu", "Minyak", "Air"], ans: 2 },
+            { q: "Tanaman butuh cahaya hangat dari...", icon: "☀️", opts: ["Matahari", "Lampu Kamar", "Bulan"], ans: 0 },
+            { q: "Buah lezat dan manis berasal dari bagian...", icon: "🍎", opts: ["Pohon/Tanaman", "Batu", "Tanah"], ans: 0 },
+            { q: "Benar atau Salah: Tanaman adalah makhluk hidup?", icon: "🌱", opts: ["Benar", "Salah", "Tidak Tahu"], ans: 0 },
+            { q: "Udara segar yang dihasilkan tanaman disebut...", icon: "🌬️", opts: ["Asap", "Oksigen", "Angin Kencang"], ans: 1 },
+            { q: "Jika tanaman tidak disiram air, tanaman akan...", icon: "🥀", opts: ["Tumbuh Tinggi", "Layu dan Mati", "Tertidur"], ans: 1 },
+            { q: "Tempat menanam tanaman yang subur adalah...", icon: "🟤", opts: ["Tanah", "Plastik", "Kaca"], ans: 0 },
+            { q: "Sikap yang baik terhadap tanaman adalah...", icon: "❤️", opts: ["Memetik Sembarangan", "Merawat & Menyiram", "Injak-injak"], ans: 1 }
+        ];
+
+        function startQuizEngine() {
+            const nameInput = document.getElementById('student-name-input').value.trim();
+            if (!nameInput) {
+                speakText("Masukkan namamu terlebih dahulu ya!");
+                alert("Harap isi nama anak terlebih dahulu.");
+                return;
+            }
+
+            state.studentName = nameInput;
+            state.quizScore = 0;
+            state.currentQuizIndex = 0;
+
+            document.getElementById('quiz-user-setup').classList.add('hidden');
+            document.getElementById('quiz-active-area').classList.remove('hidden');
+            document.getElementById('quiz-result-area').classList.add('hidden');
+
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const q = quizQuestions[state.currentQuizIndex];
+            document.getElementById('quiz-current-num').innerText = state.currentQuizIndex + 1;
+            document.getElementById('quiz-live-score').innerText = state.quizScore;
+            document.getElementById('quiz-image-box').innerText = q.icon;
+            document.getElementById('quiz-question-text').innerText = q.q;
+
+            const grid = document.getElementById('quiz-options-grid');
+            grid.innerHTML = '';
+
+            q.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'p-5 bg-emerald-100 hover:bg-emerald-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white font-bold text-lg rounded-2xl shadow-md border-2 border-emerald-300 bounce-hover';
+                btn.innerText = opt;
+                btn.onclick = () => answerQuiz(idx);
+                grid.appendChild(btn);
+            });
+
+            speakText(`Soal nomor ${state.currentQuizIndex + 1}. ${q.q}`);
+        }
+
+        function answerQuiz(selectedIdx) {
+            const q = quizQuestions[state.currentQuizIndex];
+            if (selectedIdx === q.ans) {
+                playSoundEffect('correct');
+                state.quizScore += 10;
+            } else {
+                playSoundEffect('wrong');
+            }
+
+            state.currentQuizIndex++;
+            if (state.currentQuizIndex < quizQuestions.length) {
+                renderQuizQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            document.getElementById('quiz-active-area').classList.add('hidden');
+            document.getElementById('quiz-result-area').classList.remove('hidden');
+
+            document.getElementById('res-student-name').innerText = state.studentName;
+            document.getElementById('res-final-score').innerText = state.quizScore;
+
+            const certMsg = document.getElementById('cert-eligible-msg');
+            const certBtn = document.getElementById('btn-view-cert');
+
+            if (state.quizScore >= 80) {
+                playSoundEffect('correct');
+                certMsg.classList.remove('hidden');
+                certBtn.classList.remove('hidden');
+                speakText(`Hebat sekali ${state.studentName}! Nilaimu ${state.quizScore}. Kamu mendapatkan sertifikat!`);
+            } else {
+                certMsg.classList.add('hidden');
+                certBtn.classList.add('hidden');
+                speakText(`Bagus sekali ${state.studentName}! Nilaimu ${state.quizScore}. Ayo belajar lagi agar dapat nilai 100!`);
+            }
+
+            // Save to Local History
+            saveQuizResultToLocal();
+
+            // Sync with Google Apps Script Backend if configured
+            if (state.scriptUrl) {
+                syncWithGoogleSheet();
+            }
+        }
+
+        function resetQuizEngine() {
+            document.getElementById('quiz-user-setup').classList.remove('hidden');
+            document.getElementById('quiz-active-area').classList.add('hidden');
+            document.getElementById('quiz-result-area').classList.add('hidden');
+        }
+
+        /* ===================================================
+         * LOCAL STORAGE & GOOGLE APPS SCRIPT SYNC
+         * =================================================== */
+        function saveQuizResultToLocal() {
+            let history = JSON.parse(localStorage.getItem('mpi_quiz_history') || '[]');
+            const entry = {
+                date: new Date().toLocaleDateString('id-ID'),
+                name: state.studentName,
+                score: state.quizScore,
+                status: state.quizScore >= 80 ? 'LULUS (Sertifikat)' : 'Belum Maksimal'
+            };
+            history.unshift(entry);
+            localStorage.setItem('mpi_quiz_history', JSON.stringify(history));
+
+            updatePortfolioHistoryTable();
+        }
+
+        function updatePortfolioHistoryTable() {
+            const body = document.getElementById('portfolio-history-body');
+            const history = JSON.parse(localStorage.getItem('mpi_quiz_history') || '[]');
+            body.innerHTML = '';
+
+            if (history.length === 0) {
+                body.innerHTML = '<tr><td colspan="4" class="p-3 text-center text-slate-400">Belum ada riwayat kuis.</td></tr>';
+                return;
+            }
+
+            history.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3">${item.date}</td>
+                    <td class="p-3 font-bold">${item.name}</td>
+                    <td class="p-3 font-bold text-amber-600">${item.score}</td>
+                    <td class="p-3 font-semibold text-emerald-600">${item.status}</td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        function saveScriptUrl() {
+            const url = document.getElementById('script-url-input').value.trim();
+            if (url) {
+                state.scriptUrl = url;
+                localStorage.setItem('mpi_script_url', url);
+                alert("URL Google Apps Script berhasil disimpan!");
+            }
+        }
+
+        function syncWithGoogleSheet() {
+            if (!state.scriptUrl) return;
+
+            fetch(state.scriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nama: state.studentName,
+                    skor: state.quizScore
+                })
+            }).then(() => {
+                console.log("Data dikirim ke Google Sheet.");
+            }).catch(err => console.log("Gagal sync sheet:", err));
+        }
+
+        function fetchCloudData() {
+            if (!state.scriptUrl) {
+                alert("Harap masukkan Web App URL Google Apps Script terlebih dahulu di kolom atas.");
+                return;
+            }
+
+            fetch(`${state.scriptUrl}?action=getHasil`)
+                .then(res => res.json())
+                .then(res => {
+                    const body = document.getElementById('cloud-data-table-body');
+                    body.innerHTML = '';
+                    if (res.status === 'success' && res.data.length > 1) {
+                        for (let i = 1; i < res.data.length; i++) {
+                            const row = res.data[i];
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td class="p-3 font-bold">${row[0]}</td>
+                                <td class="p-3">${row[1]}</td>
+                                <td class="p-3 text-amber-600 font-bold">${row[2]}</td>
+                                <td class="p-3 text-emerald-600 font-bold">${row[3]}</td>
+                            `;
+                            body.appendChild(tr);
+                        }
+                    } else {
+                        body.innerHTML = '<tr><td colspan="4" class="p-3 text-center">Tidak ada data ditemukan.</td></tr>';
+                    }
+                })
+                .catch(err => {
+                    alert("Gagal mengambil data cloud. Pastikan Web App URL sudah benar & diizinkan untuk Siapa Saja.");
+                });
+        }
+
+        function loadSpreadsheetVideo() {
+            if (!state.scriptUrl) return;
+            fetch(`${state.scriptUrl}?action=getVideo`)
+                .then(res => res.json())
+                .then(res => {
+                    if (res.status === 'success' && res.data.length > 1) {
+                        const title = res.data[1][0];
+                        const url = res.data[1][1];
+                        document.getElementById('video-title-display').innerText = `Video: ${title}`;
+                        document.getElementById('youtube-player').src = url;
+                    }
+                });
+        }
+
+        /* ===================================================
+         * CERTIFICATE & PRINTING
+         * =================================================== */
+        function viewDigitalCertificate() {
+            document.getElementById('cert-student-fullname').innerText = state.studentName.toUpperCase();
+            document.getElementById('cert-score-display').innerText = `NILAI: ${state.quizScore}`;
+            document.getElementById('cert-date-display').innerText = new Date().toLocaleDateString('id-ID');
+            openModal('printable-certificate-modal');
+        }
+
+        function printCertificate() {
+            if (!state.studentName) {
+                state.studentName = "Siswa PAUD Ceria";
+            }
+            viewDigitalCertificate();
+        }
+
+        function showGuideTab(tab) {
+            document.querySelectorAll('.guide-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById(`guide-${tab}`).classList.remove('hidden');
+        }
+
+        function copyCode(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            alert("Source code berhasil disalin ke clipboard!");
+        }
+
+        // Initialize on Load
+        window.onload = function() {
+            updatePortfolioHistoryTable();
+            if (state.scriptUrl) {
+                document.getElementById('script-url-input').value = state.scriptUrl;
+            }
+        };
+    </script>
+</body>
+</html>
